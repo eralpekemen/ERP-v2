@@ -1,6 +1,6 @@
-# ERP-v2 - Alçitepe Cafe ERP/POS Sistemi
+# ERP-v2 - Restoran/Kafe ERP ve POS Sistemi
 
-Bu proje, restoran/kafe işletmeleri için tam entegre ERP ve POS sistemi. Özellikler: Masa yönetimi, sipariş alma, stok takip, personel vardiya, raporlama vb.
+Bu proje, küçük-orta ölçekli restoran/kafe işletmeleri için tam entegre ERP ve POS sistemi. Özellikler: Masa yönetimi, sipariş alma, stok takip, personel vardiya, raporlama vb.
 
 ## Kurulum
 1. `config.php` dosyasını veritabanı ayarlarınızla güncelleyin.
@@ -8,14 +8,14 @@ Bu proje, restoran/kafe işletmeleri için tam entegre ERP ve POS sistemi. Özel
 3. `localhost/ac/` üzerinden erişin.
 
 ## Özellikler
-- POS (pos.php)
-- Mutfak Ekranı (kitchen_screen.php)
-- Stok Yönetimi (stock_movements.php)
-- Personel (personnel.php)
-- Raporlar (reports_online.php)
+- POS (pos.php): Masa seçimi, sipariş alma, ödeme.
+- Mutfak Ekranı (kitchen_screen.php): Sipariş durumu takibi.
+- Stok Yönetimi (stock_movements.php): Reçete bazlı stok düşümü.
+- Personel (personnel.php): Vardiya, izin talebi.
+- Raporlar (reports_online.php): Satış ve stok raporları.
 
 ## Ekran Görüntüleri
-![POS Ekranı](assets/screenshots/pos.png)
+Güncellenecektir!
 
 ## Lisans
 MIT License
