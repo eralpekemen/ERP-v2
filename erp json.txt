@@ -1,0 +1,244 @@
+Proje geniş bir proje
+
+GÜVENLİK:
+	- CRSF KORUMASI
+	- İNPUT DOĞRULAMA
+	- Ödemelerde çift onay (2FA entegrasyonu)
+
+GELİŞİM:
+	- ÇOKLU DİL DESTEĞİ
+	- ÇOKLU PARA BİRİMİ DESTEĞİ (Gerçek zamanlı döviz kuru API'si entegre et) TCMB ve ExchangeRatesAPI entegre et varsayılan para birimi (TRY), otomatik güncelleme
+		- Anlık kur ile gelir/gider girişi
+		- Fatura ödemelerinde anlık kur desteği
+		- Satışlarda dövizli fiyatlandırma
+		- Bu değerler, gelir/gider ve ödeme işlemlerine entegre edilsin (örneğin altınla ödeme, TRY dönüşümü).
+	- ÇOKLU EMTİA DESTEĞİ (KIYMET YÖNETİMİ ) 
+		- Anlık fiyatlar (gram altın, ons altın, gümüş vb.) 
+		- Gerçek zamanlı çekilsin Bu değerler 
+		- gelir/gider ve ödeme işlemlerine entegre edilsin (örneğin altınla ödeme, TRY dönüşümü).
+		- Emtia işlemlerinde CSRF ve 2FA zorunlu.
+	- SİSTEM İÇİ ARAMA
+	- CACHE
+	- SMS APİ
+	- E-POSTA APİ
+	- ŞİRKET İÇİ ÇALIŞANLAR ARASI CHAT
+	- GELİŞMİŞ RAPORLAMA
+		- Detaylı Filtreleme
+		- Çıktı Alabilme (PDF, Excel, Doc, Yazdır)
+		- İndirme
+		- E-Posta Gönderimi
+	- Bildirim Modülü (Notifications)
+	- Kurumsal Radyo Yayını
+		-	Şubelerde ve şirket içlerinde birbirinden bağımsız olarak hazırladığımız playlistleri çalacak ve araya reklam yada anons gibi girecek ve bunları çalacak gün boyu
+		-	Kendi Sistemimize gömük bir sistem olmalı mysql kullanmalı ana şirket playlistte güncelleme yapabilmeli alt şirketler ve şubeler yapamamalı
+	- PERSONEL
+		-	RFID İLE GİRİŞ - ÇIKIŞ TAKİBİ
+		-	Mesai hesaplama: Standart formül (normal saat: 8 saat/gün, mesai: 1.5x ücret, Türk İş Kanunu'na göre haftalık 45 saat üstü mesai). Kaynak: Çalışma Bakanlığı sitesi, Stack Overflow örnekleri (PHP timediff fonksiyonu).
+		-	Hak ediş: Aylık maaş / 30 gün * çalışılan gün + mesai + avans indirimi.
+		-	Giriş-çıkış: Zaman damgası ile logla, mobil uyumlu form (Bootstrap datetime picker).
+		-	Aylık Maaş Girişi: Personel detayında aylık maaş gir/düzenle, saatlik ücret otomatik hesapla (maaş / aylık çalışma saati).
+		-	Haftalık Çalışma Takvimi: Personel bazında haftalık gün/saat belirle (örn. Pzt-Cum 09:00-18:00, Cumartesi yarım gün).
+		-	Günlük Giriş-Çıkış Saatleri: Manuel veya otomatik (zaman damgası ile) loglama, çalışılan saat hesaplama.
+		-	Hak Ediş Hesaplama: Çalışılan gün/saat + mesai - avans = hak ediş (otomatik formül).
+		-	Avans Ödemeleri: Mevcut, ama hak edişten indirimli görüntüle.
+		-	Ödeme Çıkartma: Günlük/haftalık/aylık bazda hak edişe göre ödeme (SMS/email bildirimi).
+		-	Mesai Hesaplama: Giriş-çıkışa göre otomatik (normal saat üstü 1.5x ücret, cron ile günlük rapor).
+	- MÜŞTERİLER
+		-	GELİŞMİŞ MÜŞTERİ SADAKAT PROGRAMI
+		- 	MÜŞTERİLERE TANIMLANAN RFID KARTLAR İLE MÜŞTERİLER ALIŞVERİŞ YAPABİLİR
+		-	MÜŞTERİLER KARTLARINA ŞUBELERDEN BAKİYE YÜKLEYEBİLİR
+		-	MÜŞTERİLERE ÖZEL KAMPANYA DÜZENLENEBİLİR
+		-	MÜŞTERİLER AÇIK HESAP ÇALIŞABİLİR. (BİR LİMİTLERİ OLMALI)
+		-	MÜŞTERİLERE SMS YADA EMAİL YOLUYLA KAMPANYA İLETEBİLMEYİİZ
+
+	- ŞİRKET YÖNETİMLERİ
+		- ANA ŞİRKETLER
+			- TEDARİKÇİ YÖNETİMİ (TÜM TEDARİKÇİLER)
+			- MÜŞTERİ YÖNETİMİ 
+				-	TÜM ALT ŞİRKET MÜŞTERİLRİDE DAHİL TEK VERİTABANINDA TOPLANSIN BU SAYEDE MÜŞTERİ HANGİ ŞİRKETİMİZEDE GİTSE HANGİ ŞUBEMİZEDE GİTSE TANIMLANAN KART İLE İŞLEM ALABİLİRİZ. BU SAYEDE MÜŞTERİ SADAKAT PROGRAMI DAHA BAŞARILI OLUR
+				-	HER MÜŞTERİNİN PAYLAŞABİLECEĞİ BİR REFERANS KODU OLMALI BU REFERANS KODUNA BAĞLI HER YENİ GELEN MÜŞTERİ İÇİN KAMPANYA YADA BAŞKA KAZANÇLAR ELDE ETTİREBİLMELİYİZ.
+		- ALT ŞİRKETLER
+			- TEDARİKÇİ YÖNETİMLERİ YOK
+			- ÜRÜN SİPARİŞLERİNİ ANA ŞİRKETLERİNE GÖNDERECEK
+				-	ÜRÜN TALEP LİSTESİ OLUŞTURULACAK HAFTALIK SEVKİYAT TARİHİNE UYGUN BİR TARİH BELİRLENECEK 
+			- STOK TAKİBİ YAPABİLECEK
+				- HER ŞUBENİN VE ALT ŞİRKETİN KENDİ DEPOLARI MEVCUT
+				- MALİYET TAKİBİ YAPABİLMELİYİZ
+				- STOK SAYIMI YAPABİLMELİ
+					-	STANDART SAYIM (AYLIK / HAFTALIK)
+					- 	ÖZEL SAYIM ANLIK
+			- ÜRÜN ÜRETİMİ YAPABİLECEK
+				-	REÇETE ÜRETİP REÇETEYE BAĞLI ÜRÜN ÜRETİNİ YAPILMALI
+			- PERSONEL TAKİBİ YAPABİLECEK
+				-	PERSONEL ÖDEMELERİNİ ANA ŞİRKETLER YAPACAK
+				-	MESAİ GİRİŞİ ALT ŞİRKETLERE VE ŞUBELERİNE AİT OLACAK
+				-	AVANS ÜST ŞİRKETLERDEN TALEP EDİLECEK
+				-	PERSONEL ÖZLÜK DOSYASI TAKİBİ YAPILABİLMELİ
+					-	ÖZLÜK DOSYASINDA OLMASI GEREKENLER
+						- Nüfus cüzdanı fotokopisi
+						- İkametgâh belgesi
+						- Diploma fotokopisi yada eğitim durumu bildirir formu
+						- SGK işe giriş bildirgesi
+						- Sağlık raporu
+						- Adli sicil kaydı
+						- Vesikalık fotoğraf
+						- Kan grubu kartı
+						- Askerlik durum belgesi (Erkek çalışanlar için)
+						- Sigortalı İşe Giriş Bildirgesi 5510 sayılı Kanun m.8
+						- Sağlık Raporu ve Periyodik Muayene Belgeleri
+						- Aile Durumu Bildirim Formu
+						- Fazla Mesai Onay Belgesi 4857 sayılı Kanun m.41
+						- Gizlilik Sözleşmesi
+						- Çalışma İzin Belgesi (Yabancı uyruklu çalışanlar için) 6735 sayılı Kanun m.24
+						- Engelli ise Sakatlık Raporu ya da onaylı örneği
+						- Eski hükümlü, engelli ya da terör mağduru ise İŞKUR kayıt belgesi
+						- Varsa işçi ehliyet fotokopisi
+						- İstifa dilekçesi
+						- Fesih bildirimi
+						- İbraname
+						- SGK İşten ayrılış bildirgesi
+						- İhbarname
+						- Hizmet belgesi
+						- Kıdem ve ihbar tazminatı bordroları
+						- Varsa haklı fesih sebebini ispatlayan belge
+						- İşçiye noterle yapılan bildirimler, ihtarnameler
+						- İşe Başvuru Formu
+						- İş Teklif Formu
+						- Evlilik cüzdanı fotokopisi
+						- Referans mektupları
+						- Özgeçmişler
+						- Bakmakla yükümlü olunan kişilerin kimlik fotokopileri
+						- Daha önceki işyerinden alınmış bonservis/hizmet/çalışma belgesi
+				-   PERSONEL EĞİTİMLERİ
+				-	PERSONELLERE GÜNLÜK, HAFTALIK VE AYLIK GÖREV TANIMLAMASI
+				-	SMS YADA EMAİL YOLUYLA BİLDİRİM GÖNDEREBİLMELİYİZ
+				-	AYLIK VE HAFTALIK ÇALIŞMA VE VARDİYA TAKİBİ YAPABİLMELİYİZ
+				-	ZİMMET TAKİBİ
+				-	İZİN TAKİBİ
+				-	PERSONELLER SİSTEMDE KENDİ PROFİLLERİNİ GÖREBİLECEK
+				-	HER PERSONELİN ŞİFRESİ HARİCİNDE BİRDE 4 KARAKTERLİ SAYIDAN OLUŞSAN BİR PİN KODU OLMALI (SATIŞ EKRANLARINA GEÇERKEN PİN KODU İLE GİRİŞ YAPMAK ZORUNDA OLMALILAR)
+
+https://narpos.com.tr/upload/urun/41100577698.webp PİN EKRANI (ÖRNEK)
+https://narpos.com.tr/upload/urun/50881288141.webp MASA SEÇİM EKRANI (ÖRNEK)
+
+SABL
+├── ALÇITEPE CAFE
+│   └── SATIŞ KANALLARI
+│       ├── ONLİNE YEMEK SİPARİŞ PLATFORMLARI
+│       ├── ŞUBELER
+│       │   ├── PAKET SERVİS ac1
+│       │   ├── MASAYA SERVİS ac1
+│       │   └── AL GÖTÜR SERVİS (TAKE A WAY) ac1
+│       └── STANDLAR
+├── TARİHİ YARIMADA DONDURMACISI
+│	├── SATIŞ KANALLARI
+│   │   ├── ONLİNE YEMEK SİPARİŞ PLATFORMLARI
+│   │   ├── ŞUBELER
+│   │   │   ├── PAKET SERVİS
+│   │  	│   ├── MASAYA SERVİS
+│   │   │   └── AL GÖTÜR SERVİS (TAKE A WAY)
+│   │   └── STANDLAR
+│	└── İMALATHANE (DONDURMA, TATLI)
+├── KRİTHİA HEDİYELİK (MUM, SABUN, ZEYTİN, ZEYTİNYAĞI, DOĞAL TAŞ, ORGANİK ÜRÜNLER)
+│	├── SATIŞ KANALLARI
+│   │   ├── ONLİNE PAZARYERİ ENTEGRASYONLARI
+│   │   │   ├── TRENDYOL
+│   │  	│   ├── HEPSİBURADA
+│   │   │   ├── N11
+│   │  	│   ├── PAZARAMA
+│   │   │   ├── E-PTT AWM
+│   │  	│   ├── ETSY
+│   │   │   ├── EBAY
+│   │  	│   ├── AMAZON
+│   │   │   └── ÇİÇEKSEPETİ
+│   │   ├── ŞUBELER
+│   │   └── STANDLAR
+│	└── İMALATHANE (SERAMİK, MUM, SABUN, DEKORATİF ÜRÜNLER)
+├── KRİTHİA TRAVEL (TATİL, OTEL, TUR, UÇAK BİLETİ, OTOBÜS BİLETİ, KANO KİRALAMA, TEKNE KİRALAMA, ARAÇ KİRALAMA)
+│	├── SATIŞ KANALLARI
+│   │   ├── ONLİNE BOOKİNG ENTEGRASYONLARI
+│   │   ├── ŞUBELER
+│   │   └── STANDLAR
+├── ALÇITEPE ORGANİK (MUM, SABUN, ZEYTİN, ZEYTİNYAĞI, DOĞAL TAŞ, ORGANİK ÜRÜNLER)
+│	├── SATIŞ KANALLARI
+│   │   ├── ONLİNE PAZARYERİ ENTEGRASYONLARI
+│   │   │   ├── TRENDYOL
+│   │  	│   ├── HEPSİBURADA
+│   │   │   ├── N11
+│   │  	│   ├── PAZARAMA
+│   │   │   ├── E-PTT AWM
+│   │  	│   ├── ETSY
+│   │   │   ├── EBAY
+│   │  	│   ├── AMAZON
+│   │   │   └── ÇİÇEKSEPETİ
+│   │   ├── ŞUBELER
+│   │   └── STANDLAR
+│	└── İMALATHANE (SERAMİK, MUM, SABUN, DEKORATİF ÜRÜNLE,ORGANİK ÜRÜNLER)
+├── KİRTE ORGANİK (MUM, SABUN, ZEYTİN, ZEYTİNYAĞI, DOĞAL TAŞ, ORGANİK ÜRÜNLER)
+│	├── SATIŞ KANALLARI
+│   │   ├── ONLİNE PAZARYERİ ENTEGRASYONLARI
+│   │   │   ├── TRENDYOL
+│   │  	│   ├── HEPSİBURADA
+│   │   │   ├── N11
+│   │  	│   ├── PAZARAMA
+│   │   │   ├── E-PTT AWM
+│   │  	│   ├── ETSY
+│   │   │   ├── EBAY
+│   │  	│   ├── AMAZON
+│   │   │   └── ÇİÇEKSEPETİ
+│   │   ├── ŞUBELER
+│   │   └── STANDLAR
+│	└── İMALATHANE (SERAMİK, MUM, SABUN, DEKORATİF ÜRÜNLE,ORGANİK ÜRÜNLER)
+
+- Uzaktan ayar ve menü güncellemeleri – Tüm şubelere eş zamanlı yansımalı
+- Şube bazlı karşılaştırmalı raporlar – Hangi şube ne kadar kazandırıyor görelim
+- Personel yetkilendirmesi ve takip – Şube bazlı kullanıcı kontrolü
+- Stok takibi ve sipariş yönetimi tüm lokasyonlarda entegre
+- Fatura İyileştirmesi: Fatura oluşturma/düzenleme süreçlerini otomatikleştirme, e-fatura entegrasyonu.
+- BORÇ YÖNETİMİ
+	- BORÇ YÖNETİMİ KREDİ YÖNETİMİ SADECE ANA ŞİRKETLERDE OLABİLİR ALT ŞİRKETLERDE VE ŞUBE,STANDLARDA OLAMAZ
+	- TAKSİT SAYISI SEÇİLEBİLİR OLMALI VE TAKSİT TARİHLERİ SONRADAN DÜZENLENEBİLİRİ OLMALU
+	- BORÇ ÖDEMELERİ EMTİA, DOVİZ GİBİ FAKRLI ŞEKİLDE ÖDENEBİLİR OLMALI
+
+Personel Giriş Yapmak istediği firma için link tıklayacak ve personel numarası yada telefon numarası bilgisi girerek giriş yapabilecek personel yetkisine göre yönetim panelinde görünürlükler değişecek
+personel kendi belirlediği 4 haneli bir pin ile de giriş yapabilecekler
+personeller RFID 13.66 mhz bir kart ilede giriş yapabilecekler
+
+sistemde entegre caller id olabilir (ardiuno ve android app kullanarak yapılabilir) fikir üret ve entegre etmek için uğraş
+ac1 = POS (point of sale) 
+	-	bu ekrandan paket servis, al götür servisi, masa-adisyon servislerinin hepsini yönetebilmeliyim
+	-   paket servis için kuryelerimi takip edebilmeliyim
+	-   anlık ürün satışı yapabilmelisin
+	- 	yönetim panelinden satışı yapılabilen yada satışı olmayan ürünleri listelenmesini sağlayabilirisin.
+	-	bu ekranda YemekSepeti, Getir, Trendyol, Fuudy, Tıkla Gelsin, Migros Yemek siparişleri için api bağlantısı olsun paket servis sistemine entegre olsun
+	-	atıklar ve ikramlar kolayca kaydedilebilsin
+	-	saat, ürün, personel bazlı raporlamada yapılabilsin
+	-	detaylı masa tabiki 
+	-   whatsapp üzerinden sipariş (https://sepettakip.com/_next/image?url=%2Fassets%2Fwhatsapp%2Fwhatsapp-1.webp&w=1920&q=75) örnek link verdim
+	-   burada oluşturulan siparişler için dokunmatik mutfak hazırlık ekranlarım var buraya anlık ve anında ulaşması lazım
+	-	termal yazıcı için ayarlar yapılmalı kullanmayı düşünmüyoruz ama yeni şubeler için ek seçenek ve çözüm sunar
+	- 	HER ŞUBE GÜNLÜK MASRAFLARINI SİSTEME İŞLEMEK ZORUNDA
+	- 	ŞUBELER BELİRLENEN ZAMAN İÇİN (ÖRNEĞİN HAFTADA BİR) TOPLANAN KASA PARASINI MERKEZ OFİS KASASINA TRASFER EDEBİLECEK YADA BELİRLENEN BİR BANKA HESABINA YATIRACAK
+	- 	HER VARDİYA İÇİN KASA AÇILIŞ VE KAPANIŞ BİLDİRİLMEK ZORUNDA
+		-	BU SAYEDE KASİYER PERSONEL KASADA EKSİK VEYA FAZLA OLMASI DURUMUNDA SORUMLU OLABİLECEK
+
+
+- Her şube bir üst şirketine her şirket ana şirkete bağlı olmak zorunda
+- Her şirket ve şube https://sabl.com.tr alan adı altında bir alt alan adına sahip 
+- Her Şirketin veritabanı ayrı olmalı
+- Her Subdomaini kendi klasörü mevcut
+- Ana şirketin domain adresi http://merchant.sabl.com.tr
+- Alt şirketlerin domain adresleri;
+	-alcitepecafe.sabl.com.tr
+	-alcitepeorganik.sabl.com.tr
+	-kh.sabl.com.tr (kirtehediyelik)
+	-krithiatravel.sabl.com.tr
+	-kirteorganik.sabl.com.tr
+Sana aktardığım bilgileri incele
+
+BANA ÖNERİLERİNİ LİSTELE
+KOD OLUŞTURMA SADECE BU KONU ÜZERİNE KONUŞALIM
+YAKLAŞIK MALİYET VE OLUŞTURMA SÜREÇLERİ HAKKINDA BİLGİ VER
+
+OLUŞTURMA SÜRECİ HAKKINDA BİLGİ VER
+

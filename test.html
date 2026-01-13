@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title><link href="assets/css/app.min.css" rel="stylesheet">
+    <link href="assets/css/vendor.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .pos-checkout-table { cursor: pointer; }
+        .pos-checkout-table.available { background: #e0f7fa; }
+        .pos-checkout-table.in-use { background: #ffebee; }
+        .pos-checkout-table.disabled { background: #f5f5f5; }
+        .pos-sidebar { width: 400px; position: fixed; right: 0; top: 0; bottom: 0; }
+        .pos-sidebar-body { overflow-y: auto; }
+        .btn-theme:disabled { background-color: #6c757d; cursor: not-allowed; opacity: 0.65; }
+        .btn-department.active { background-color: #007bff; color: white; }
+        .btn-department { margin-right: 5px; }
+        .cancel-btn { margin-left: auto; }
+        @media (max-width: 767px) {
+            .pos-sidebar { width: 100%; transform: translateX(100%); transition: transform 0.3s; }
+            .pos-mobile-sidebar-toggled .pos-sidebar { transform: translateX(0); }
+            .btn-department { margin-bottom: 5px; }
+            .cancel-btn { margin-top: 10px; }
+        }
+        .nav-item { margin-right: 10px; }
+        .nav-link { display: flex; align-items: center; padding: 8px; border-radius: 5px; }
+        .nav-link:hover { background: #f8f9fa; }
+        .modal-xl { max-width: 1200px; }
+        .payment-row { margin-bottom: 15px; }
+        .department-name { color: #007bff; font-weight: bold; }
+        #numpad button { height: 50px; font-size: 1.2rem; }
+        .logo-text { font-size: 2rem; font-weight: 800; color: #fff; }
+        .pos-product { cursor: pointer; transition: all 0.3s; }
+        .pos-product:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .total-price { font-size: 3rem; font-weight: 900; color: #00ff88; }
+        #barcode-input { position: fixed; top: -100px; opacity: 0; }
+        .mode-btn { padding: 15px; font-size: 1.2rem; }
+        .product{
+            padding:5px;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Ödeme Al</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- TOPLAM TUTAR -->
+                <h4 class="text-center mb-4">Toplam: <span id="total-amount" class="text-success">150.00 TL</span></h4>
+                <h5 class="text-center mb-4">Kalan: <span id="remaining-amount" class="text-danger">150.00 TL</span></h5>
+
+                <!-- MÜŞTERİ SEÇİMİ (ICON BUTON) -->
+                <div class="text-center mb-3">
+                    <button class="btn btn-outline-primary icon-btn" onclick="selectCustomer()">
+                        <i class="fa fa-user fa-2x"></i>
+                    </button>
+                    <p class="small mt-1">Müşteri Seç</p>
+                </div>
+
+                <!-- NFC KART OKUTMA (ICON BUTON) -->
+                <div class="text-center mb-4">
+                    <button class="btn btn-outline-success icon-btn" onclick="readNFCCard()">
+                        <i class="fa fa-id-card fa-2x"></i>
+                    </button>
+                    <p class="small mt-1">NFC Kart Okut</p>
+                </div>
+
+                <!-- İNDİRİM ALANI -->
+                <div class="mb-3">
+                    <label class="form-label">İndirim Uygula</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="discount-value" placeholder="0.00" min="0" step="0.01">
+                        <select class="form-select" id="discount-type">
+                            <option value="amount">Tutarsal (TL)</option>
+                            <option value="percent">Yüzdesel (%)</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="applyDiscount()">Uygula</button>
+                    </div>
+                </div>
+
+                <!-- PUAN KULLANIM ALANI (müşteri seçilince gösterilsin) -->
+                <div class="mb-3 hidden" id="points-section">
+                    <label class="form-label">Puan Kullan</label>
+                    <div class="alert alert-info">
+                        Biriken Puan: <span id="customer-points">0</span>
+                        <input type="number" class="form-control mt-2" id="use-points" placeholder="Kullanılacak Puan" min="0">
+                    </div>
+                </div>
+
+                <!-- PARÇALI ÖDEME SATIRLARI -->
+                <div class="mb-3">
+                    <label class="form-label">Ödeme Yöntemleri</label>
+                    <div id="payment-rows">
+                        <!-- Dinamik satırlar JS ile eklenecek -->
+                    </div>
+                    <button class="btn btn-secondary w-100" onclick="addPaymentRow()">+ Yöntem Ekle</button>
+                </div>
+
+                <!-- HESAP BÖLME (2/n, 3/n, Alman Usulü) -->
+                <div class="mb-3">
+                    <label class="form-label">Hesap Böl</label>
+                    <div class="btn-group w-100">
+                        <button class="btn btn-outline-secondary" onclick="divideAccount(2)">2/n</button>
+                        <button class="btn btn-outline-secondary" onclick="divideAccount(3)">3/n</button>
+                        <button class="btn btn-outline-secondary" onclick="divideAccount(4)">4/n</button>
+                        <button class="btn btn-outline-secondary" onclick="divideAccount(5)">5/n</button>
+                        <button class="btn btn-outline-secondary" onclick="almanUsulu()">Alman Usulü</button>
+                    </div>
+                </div>
+
+                <!-- ALMAN USULÜ ALANI (gizli, tıklayınca göster) -->
+                <div class="mb-3 hidden" id="alman-usulu-section">
+                    <label class="form-label">Herkes Kendi Yediğini Öder</label>
+                    <div id="alman-usulu-items">
+                        <!-- Dinamik ürün listesi JS ile eklenecek -->
+                    </div>
+                </div>
+
+                <!-- FATURA İSTER Mİ? -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="want-invoice">
+                    <label class="form-check-label" for="want-invoice">Fatura İster</label>
+                </div>
+
+                <button class="btn btn-success w-100" onclick="completePayment()">Ödemeyi Tamamla</button>
+            </div>
+        </div>
+    </div>
+</div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="assets/js/app.min.js"></script>
+        <script type="text/javascript">
+            $(window).on('load', function() {
+                $('#paymentModal').modal('show');
+            });
+        </script>
+    </body>
+</html>
