@@ -244,10 +244,9 @@ ob_start();
             } else {
                 echo json_encode(['success' => false, 'message' => 'Dosya yüklenemedi!']);
             }
-            exit; // BU SATIR KRİTİK – SCRIPT BURADA BİTER, HTML DÖNMEZ!
+            exit; // KRİTİK – HTML dönmesini engeller
         }
-
-        // Diğer action'lar buraya taşınabilir (get_leave_details, open_shift vb.)
+        
         echo json_encode(['success' => false, 'message' => 'Geçersiz action']);
         exit;
     }
