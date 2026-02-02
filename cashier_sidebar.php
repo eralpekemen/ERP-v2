@@ -34,7 +34,7 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="#" class="menu-link" onclick="loadTasks()"> <!-- AJAX ile görevleri yükle -->
+                <a href="#" class="menu-link" data-bs-toggle="modal" data-bs-target="#tasksModal">
                     <span class="menu-icon"><i class="fa fa-tasks"></i></span>
                     <span class="menu-text">Görevlerim</span>
                 </a>

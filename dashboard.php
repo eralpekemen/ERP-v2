@@ -1,61 +1,10 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ob_start();
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ob_start();
     session_start();
-    require_once 'config.php';
-    require_once 'template.php';
-    require_once 'functions/common.php';
-    require_once 'functions/notifications.php';
-    require_once 'functions/shifts.php';
 
-    // Oturum kontrolü
-    if (!isset($_SESSION['personnel_id']) || !isset($_SESSION['branch_id'])) {
-        error_log("dashboard.php: Session check failed, redirecting to login.php");
-        header("Location: login.php");
-        exit;
-    }
-
-
-    $force_close = isset($_GET['close']) && $_GET['close'] == '1';
-    $branch_id = get_current_branch();
-    $personnel_id = $_SESSION['personnel_id'];
-    $csrf_token = generate_csrf_token();
-    $personnel_type = $_SESSION['personnel_type'] ?? 'cashier';
-    $personnel_name = $_SESSION['personnel_username'] ?? 'Kasiyer';
-
-    // VARDİYA KONTROL
-    $active_shift = get_active_shift($branch_id, $personnel_id);
-
-    // GÜVENLİ DEĞERLER
-    $opening_balance = $active_shift['opening_balance'] ?? 0;
-    $shift_status = $active_shift['status'] ?? '';
-
-    // VARDİYA AÇIK MI?
-    $closing_requested = !empty($active_shift['closing_requested']);   // ← EKLENDİ
-    $is_shift_open = $active_shift && ($active_shift['status'] ?? '') === 'open' && ($active_shift['opening_balance'] ?? 0) > 0;
-    $shift_id = $active_shift['id'] ?? 0;
-
-    $show_opening_modal = false;
-    $show_closing_modal = false;
-
-    $exchangeRates = [
-        'USD' => get_exchange_rate('USD') ?? 34.50,
-        'EUR' => get_exchange_rate('EUR') ?? 38.20
-    ];
-    $js_exchangeRates = json_encode($exchangeRates);
-
-    if ($_SESSION['personnel_type'] == 'cashier') {
-        if (!$active_shift || ($active_shift['opening_balance'] ?? 0) <= 0) {
-        } elseif (is_null($active_shift['closing_balance'])) {
-            $show_closing_modal = true;
-        } else {
-            // VARDİYA TAMAMEN KAPALI → DASHBOARD'TA KAL
-        }
-    } else {
-        header("Location: admin_dashboard.php");
-        exit;
-    }
+    
 
     // AJAX İŞLEMLER
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
@@ -219,6 +168,7 @@ ob_start();
             exit;
         }
         if ($_POST['action'] === 'upload_document') {
+            ob_clean(); 
             $document_type_id = intval($_POST['document_type_id'] ?? 0);
             $notes = trim($_POST['notes'] ?? '');
             $file = $_FILES['document_file'] ?? null;
@@ -246,8 +196,95 @@ ob_start();
             }
             exit; // KRİTİK – HTML dönmesini engeller
         }
-        
+
+        if ($_POST['action'] == 'get_tasks') {
+            $query = "SELECT id, title, description, status, due_date FROM tasks WHERE personnel_id = ? ORDER BY created_at DESC";
+            $stmt = $db->prepare($query);
+            $stmt->bind_param("i", $personnel_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $tasks = [];
+            while ($row = $result->fetch_assoc()) {
+                $tasks[] = $row;
+            }
+            echo json_encode(['success' => true, 'tasks' => $tasks]);
+            exit;
+        }
+
+        if ($_POST['action'] == 'update_task_status') {
+            $task_id = intval($_POST['task_id'] ?? 0);
+            $status = $_POST['status'] ?? '';
+
+            if ($task_id <= 0 || !in_array($status, ['completed', 'problem'])) {
+                echo json_encode(['success' => false, 'message' => 'Geçersiz veri!']);
+                exit;
+            }
+
+            $stmt = $db->prepare("UPDATE tasks SET status = ? WHERE id = ? AND personnel_id = ?");
+            $stmt->bind_param("sii", $status, $task_id, $personnel_id);
+            $success = $stmt->execute();
+
+            echo json_encode([
+                'success' => $success,
+                'message' => $success ? 'Görev güncellendi!' : 'Hata oluştu'
+            ]);
+            exit;
+        }
+
         echo json_encode(['success' => false, 'message' => 'Geçersiz action']);
+        exit;
+    }
+    require_once 'config.php';
+    require_once 'template.php';
+    require_once 'functions/common.php';
+    require_once 'functions/notifications.php';
+    require_once 'functions/shifts.php';
+
+    // Oturum kontrolü
+    if (!isset($_SESSION['personnel_id']) || !isset($_SESSION['branch_id'])) {
+        error_log("dashboard.php: Session check failed, redirecting to login.php");
+        header("Location: login.php");
+        exit;
+    }
+
+
+    $force_close = isset($_GET['close']) && $_GET['close'] == '1';
+    $branch_id = get_current_branch();
+    $personnel_id = $_SESSION['personnel_id'];
+    $csrf_token = generate_csrf_token();
+    $personnel_type = $_SESSION['personnel_type'] ?? 'cashier';
+    $personnel_name = $_SESSION['personnel_username'] ?? 'Kasiyer';
+
+    // VARDİYA KONTROL
+    $active_shift = get_active_shift($branch_id, $personnel_id);
+
+    // GÜVENLİ DEĞERLER
+    $opening_balance = $active_shift['opening_balance'] ?? 0;
+    $shift_status = $active_shift['status'] ?? '';
+
+    // VARDİYA AÇIK MI?
+    $closing_requested = !empty($active_shift['closing_requested']);   // ← EKLENDİ
+    $is_shift_open = $active_shift && ($active_shift['status'] ?? '') === 'open' && ($active_shift['opening_balance'] ?? 0) > 0;
+    $shift_id = $active_shift['id'] ?? 0;
+
+    $show_opening_modal = false;
+    $show_closing_modal = false;
+
+    $exchangeRates = [
+        'USD' => get_exchange_rate('USD') ?? 34.50,
+        'EUR' => get_exchange_rate('EUR') ?? 38.20
+    ];
+    $js_exchangeRates = json_encode($exchangeRates);
+
+    if ($_SESSION['personnel_type'] == 'cashier') {
+        if (!$active_shift || ($active_shift['opening_balance'] ?? 0) <= 0) {
+        } elseif (is_null($active_shift['closing_balance'])) {
+            $show_closing_modal = true;
+        } else {
+            // VARDİYA TAMAMEN KAPALI → DASHBOARD'TA KAL
+        }
+    } else {
+        header("Location: admin_dashboard.php");
         exit;
     }
     $notifications = get_notifications_for_personnel($personnel_id, 5);
@@ -538,6 +575,49 @@ ob_start();
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- GÖREVLER MODALI (XL Boyut) -->
+        <div class="modal fade" id="tasksModal" tabindex="-1" aria-labelledby="tasksModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="tasksModalLabel">Görevlerim & Hedefler</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Hedefler Bölümü (Şimdilik statik, sonra dinamik yaparız) -->
+                        <div class="mb-4">
+                            <h5 class="text-primary mb-3"><i class="fa fa-bullseye me-2"></i> Aylık / Haftalık Hedefler</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card border-primary shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Günlük Satış Hedefi</h6>
+                                            <p class="card-text">5.000 TL üzeri satış</p>
+                                            <div class="progress mb-2">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">65%</div>
+                                            </div>
+                                            <small class="text-muted">Tamamlanma: %65</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Diğer hedefler buraya -->
+                            </div>
+                        </div>
+
+                        <!-- Görevler Listesi -->
+                        <h5 class="text-primary mb-3"><i class="fa fa-tasks me-2"></i> Bekleyen Görevler</h5>
+                        <div class="list-group" id="tasksList">
+                            <!-- Dinamik görevler buraya gelecek -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                        <button type="button" class="btn btn-primary" onclick="addNewTask()">Yeni Görev Ekle</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -889,6 +969,63 @@ ob_start();
                     }
                 });
             }
+
+            function loadTasks() {
+                $.post('dashboard.php', {
+                    action: 'get_tasks',
+                    csrf_token: csrfToken
+                }, function(r) {
+                    if (r.success) {
+                        $('#tasksList').empty();
+                        if (r.tasks.length === 0) {
+                            $('#tasksList').html('<p class="text-muted">Henüz görev yok.</p>');
+                            return;
+                        }
+                        r.tasks.forEach(task => {
+                            const statusClass = task.status === 'completed' ? 'bg-success' : (task.status === 'problem' ? 'bg-danger' : 'bg-warning');
+                            const statusText = task.status === 'completed' ? 'Tamamlandı' : (task.status === 'problem' ? 'Problem Var' : 'Beklemede');
+                            const card = `
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">${task.title}</h6>
+                                        <small class="text-muted">${task.description || ''} ${task.due_date ? ' - Son Tarih: ' + task.due_date : ''}</small>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="updateTaskStatus(${task.id}, 'completed')">
+                                            <i class="fa fa-check"></i> Tamamlandı
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="updateTaskStatus(${task.id}, 'problem')">
+                                            <i class="fa fa-exclamation-triangle"></i> Problem Var
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            $('#tasksList').append(card);
+                        });
+                    }
+                }, 'json');
+            }
+
+            function updateTaskStatus(taskId, status) {
+                $.post('dashboard.php', {
+                    action: 'update_task_status',
+                    task_id: taskId,
+                    status: status,
+                    csrf_token: csrfToken
+                }, function(r) {
+                    if (r.success) {
+                        showToast('Görev durumu güncellendi!', 'success');
+                        loadTasks(); // Listeyi yenile
+                    } else {
+                        showToast(r.message || 'Hata!', 'danger');
+                    }
+                }, 'json');
+            }
+
+            // Modal açıldığında görevleri yükle
+            $('#tasksModal').on('show.bs.modal', function () {
+                loadTasks();
+            });
         </script>
         <?php display_footer(); ?>
     </body>
